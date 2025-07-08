@@ -1,0 +1,106 @@
+name: Deploy to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup_and_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_REGISTRY_SERVER_URL }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build . -t ${{ secrets.AZURE_REGISTRY_SERVER_URL }}/zapi:latest
+          docker push ${{ secrets.AZURE_REGISTRY_SERVER_URL }}/zapi:latest
+
+      - name: Verify Docker Image
+        run: docker images
+
+  deploy_staging:
+    runs-on: ubuntu-latest
+    needs: setup_and_build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Drizzle Migrations (Staging)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
+        run: yarn drizzle-kit push
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App (Staging)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pawimo-staging-api'
+          images: ${{ secrets.AZURE_REGISTRY_SERVER_URL }}/zapi:latest
+
+      - name: logout
+        run: az logout
+
+  deploy_production:
+    runs-on: ubuntu-latest
+    needs: deploy_staging
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Drizzle Migrations (Production)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_LIVE }}
+        run: yarn drizzle-kit push
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App (Production)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pawimo-api'
+          images: ${{ secrets.AZURE_REGISTRY_SERVER_URL }}/zapi:latest
+
+      - name: logout
+        run: az logout
