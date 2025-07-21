@@ -57,9 +57,7 @@ export class MagicLoginStrategy extends PassportStrategy(
     });
 
     try {
-      const callbackUrl = payload.roles.includes(Role.PET_OWNER)
-        ? process.env.PET_OWNER_APP_DEEPLINK_BASE_URL
-        : process.env.CAREGIVER_APP_BASE_URL;
+      const callbackUrl = process.env.APP_CALLBACK_URL;
 
       const magicLinkUrl = `${callbackUrl}?token=${jwt}`;
 
