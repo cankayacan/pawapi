@@ -19,6 +19,6 @@ COPY --from=base /app .
 # Optional: install only chromium if not already preinstalled
 # RUN npx playwright install chromium
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD [ "yarn", "start:prod" ]
