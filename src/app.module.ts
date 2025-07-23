@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 
 import { AppointmentModule } from './appointment/appointment.module';
 import { AuthModule } from './auth/auth.module';
+import { CaregiverModule } from './caregiver/caregiver.module';
 import { HealthModule } from './health/health.module';
 import { LoggerMiddleware } from './logger-middleware';
 import { PetOwnerModule } from './pet-owner/pet-owner.module';
@@ -26,7 +27,7 @@ import { UploadModule } from './upload/upload.module';
     PetModule,
     PetOwnerModule,
     AppointmentModule,
-    PetOwnerModule,
+    CaregiverModule,
     HealthModule,
   ],
   providers: [],
