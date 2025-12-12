@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 import {
   integer,
   jsonb,
@@ -50,17 +52,24 @@ export const Skill = {
   EXOTIC_PET_EXPERIENCE: 'EXOTIC_PET_EXPERIENCE',
 } as const;
 
+// Dog Size enum
+export const DogSize = {
+  SMALL: 'SMALL',
+  MEDIUM: 'MEDIUM',
+  LARGE: 'LARGE',
+  XLARGE: 'XLARGE',
+} as const;
+
 // Pet Type Preference enum
 export const PetTypePreference = {
   CAT: 'CAT',
-  DOG_SMALL: 'DOG_SMALL',
-  DOG_MEDIUM: 'DOG_MEDIUM',
-  DOG_LARGE: 'DOG_LARGE',
-  DOG_XLARGE: 'DOG_XLARGE',
+  DOG: 'DOG',
+  SMALL_MAMMALS: 'SMALL_MAMMALS',
+  BIRDS: 'BIRDS',
 } as const;
 
-// Pet Age Preference enum
-export const PetAgePreference = {
+// Dog Age enum
+export const DogAge = {
   PUPPY: 'PUPPY',
   ADULT: 'ADULT',
   SENIOR: 'SENIOR',
@@ -137,7 +146,8 @@ export const caregivers = pgTable('caregiver', {
 
   // Pet preferences
   petTypePreference: text('pet_type_preference').array().notNull().default([]),
-  petAgePreference: text('pet_age_preference').array().notNull().default([]),
+  dogSize: text('dog_size').array().notNull().default([]),
+  dogAge: text('dog_age').array().notNull().default([]),
 
   // Additional information
   certifications: text('certifications').array().notNull().default([]),
@@ -167,10 +177,10 @@ export type NewCaregiver = z.infer<typeof insertCaregiverSchema>;
 // Additional type exports for use in other parts of the application
 export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType];
 export type Skill = (typeof Skill)[keyof typeof Skill];
+export type DogSize = (typeof DogSize)[keyof typeof DogSize];
 export type PetTypePreference =
   (typeof PetTypePreference)[keyof typeof PetTypePreference];
-export type PetAgePreference =
-  (typeof PetAgePreference)[keyof typeof PetAgePreference];
+export type DogAge = (typeof DogAge)[keyof typeof DogAge];
 export type MobilityOption =
   (typeof MobilityOption)[keyof typeof MobilityOption];
 export type Address = z.infer<typeof addressSchema>;
@@ -178,3 +188,34 @@ export type Geocode = z.infer<typeof geocodeSchema>;
 export type Service = z.infer<typeof serviceSchema>;
 export type Availability = z.infer<typeof availabilitySchema>;
 export type UnavailableDays = z.infer<typeof unavailableDaysSchema>;
+
+// Register enums with GraphQL
+registerEnumType(ServiceType, {
+  name: 'ServiceType',
+  description: 'Types of services offered by caregivers',
+});
+
+registerEnumType(Skill, {
+  name: 'Skill',
+  description: 'Skills possessed by caregivers',
+});
+
+registerEnumType(DogSize, {
+  name: 'DogSize',
+  description: 'Size categories for dogs',
+});
+
+registerEnumType(PetTypePreference, {
+  name: 'PetTypePreference',
+  description: 'Pet type preferences for caregivers',
+});
+
+registerEnumType(DogAge, {
+  name: 'DogAge',
+  description: 'Dog age categories',
+});
+
+registerEnumType(MobilityOption, {
+  name: 'MobilityOption',
+  description: 'Mobility options available to caregivers',
+});

@@ -1,6 +1,11 @@
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
-import { Caregiver } from '../../db/schema/caregiver';
+import {
+  Caregiver,
+  DogAge,
+  DogSize,
+  PetTypePreference,
+} from '../../db/schema/caregiver';
 import { CaregiverAddressResponseDto } from './address-response.dto';
 import { DayAvailabilityDto } from './availability-response.dto';
 import { CaregiverGeocodeResponseDto } from './geocode-response.dto';
@@ -51,15 +56,20 @@ export class CaregiverResponseDto {
   })
   unavailableDays: string[];
 
-  @Field(() => [String], {
+  @Field(() => [PetTypePreference], {
     description: 'Pet type preferences of the caregiver',
   })
-  petTypePreference: string[];
+  petTypePreference: PetTypePreference[];
 
-  @Field(() => [String], {
-    description: 'Pet age preferences of the caregiver',
+  @Field(() => [DogAge], {
+    description: 'Dog age preferences of the caregiver',
   })
-  petAgePreference: string[];
+  dogAge: DogAge[];
+
+  @Field(() => [DogSize], {
+    description: 'Dog size preferences of the caregiver',
+  })
+  dogSize: DogSize[];
 
   @Field(() => [String], { description: 'Certifications of the caregiver' })
   certifications: string[];
@@ -100,8 +110,9 @@ export class CaregiverResponseDto {
       skills: caregiver.skills,
       availability: caregiver.availability,
       unavailableDays: caregiver.unavailableDays || [],
-      petTypePreference: caregiver.petTypePreference,
-      petAgePreference: caregiver.petAgePreference,
+      petTypePreference: caregiver.petTypePreference as PetTypePreference[],
+      dogAge: caregiver.dogAge as DogAge[],
+      dogSize: caregiver.dogSize as DogSize[],
       certifications: caregiver.certifications,
       languages: caregiver.languages,
       mobility: caregiver.mobility,

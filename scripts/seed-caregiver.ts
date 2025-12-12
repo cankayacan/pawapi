@@ -4,8 +4,9 @@ import { Pool } from 'pg';
 
 import { caregivers } from '../src/db/schema/caregiver';
 import {
+  DogAge,
+  DogSize,
   MobilityOption,
-  PetAgePreference,
   PetTypePreference,
   ServiceType,
   Skill,
@@ -79,12 +80,9 @@ async function seedCaregiver() {
         '2025-11-28',
         '2025-08-10',
       ],
-      petTypePreference: [
-        PetTypePreference.DOG_SMALL,
-        PetTypePreference.DOG_MEDIUM,
-        PetTypePreference.CAT,
-      ],
-      petAgePreference: [PetAgePreference.ADULT, PetAgePreference.SENIOR],
+      petTypePreference: [PetTypePreference.DOG, PetTypePreference.CAT],
+      dogSize: [DogSize.SMALL, DogSize.MEDIUM],
+      dogAge: [DogAge.ADULT, DogAge.SENIOR],
       certifications: [
         'Pet First Aid & CPR Certified',
         'Professional Dog Trainer Certification',
